@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("onboarding") var isOnBoardingViewActive: Bool = true
+
+    
     var body: some View {
         ZStack {
             if(isOnBoardingViewActive){

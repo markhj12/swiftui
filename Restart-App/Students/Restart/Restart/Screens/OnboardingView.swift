@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    
+    //MARK: PROPERTY
     @AppStorage("onboarding") var isOnBoardingViewActive: Bool = true
+    @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
+    @State private var buttonOffset: CGFloat = 0
     
+    //MARK: BODY
     var body: some View {
         ZStack {
             Color("ColorBlue")
@@ -36,14 +39,8 @@ struct OnboardingView: View {
             
                 //MARK: - Center
                 ZStack{
-                    ZStack{
-                        Circle()
-                            .stroke(.white.opacity(0.2), lineWidth: 40)
-                            .frame(width: 260, height: 260, alignment: .center)
-                        Circle()
-                            .stroke(.white.opacity(0.2), lineWidth: 80)
-                            .frame(width: 260, height: 260, alignment: .center)
-                    }
+                    CircleGroupView(ShapeColor: .white, ShapeOpacity: 0.2)
+
                   Image("character-1")
                         .resizable()
                         .scaledToFit()
@@ -69,7 +66,7 @@ struct OnboardingView: View {
                     HStack{
                         Capsule()
                             .fill(Color("ColorRed"))
-                            .frame(width: 80)
+                            .frame(width: buttonOffset + 80)
                         Spacer()
                     }
                     //4. Circle (Draggable)
@@ -86,14 +83,29 @@ struct OnboardingView: View {
                         }
                         .foregroundColor(.white)
                     .frame(width: 80, height: 80, alignment: .center)
-                    .onTapGesture {
-                        isOnBoardingViewActive = false
-                    }
+                    .offset(x: buttonOffset)
+                    .gesture(
+                        DragGesture()
+                            .onChanged{ gesture in
+                                if (gesture.translation.width > 0 && buttonOffset <= buttonWidth-80) {
+                                    buttonOffset = gesture.translation.width
+                                }
+                            }
+                            .onEnded{_ in
+                                if(buttonOffset > buttonWidth/2){
+                                    buttonOffset = buttonWidth - 80
+                                    isOnBoardingViewActive = false
+                                } else {
+                                    buttonOffset = 0
+                                }
+                            }
+                        //: GESTURE
+                    )
                         
                         Spacer()
                     }//: HStack
                 }// :Footer
-                .frame(height: 80, alignment: .center)
+                .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding()
             }//:Vstack
         }//:Zstack
